@@ -1,0 +1,11 @@
+push 100 + rax ;и никак сука иначе, только регистр и число // push rax + 10 ; forbiden ebat ;push 30 ggg ;will suck
+push 20
+push rbx
+push [10] ; wil suck
+push [10]
+push [10 + rax ]
+add
+push 35 kago 
+sub  ; some problem with add
+out
+hlt 
