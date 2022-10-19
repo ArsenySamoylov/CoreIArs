@@ -1,0 +1,5 @@
+0 push 10  2 
+6 push 5  1 
+12 push 6 
+17 push 10  1 
+23 jmp

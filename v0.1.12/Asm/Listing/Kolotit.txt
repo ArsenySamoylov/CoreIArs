@@ -1,0 +1,4 @@
+0 push 5 
+5 push 6 
+10 add
+11 hlt
