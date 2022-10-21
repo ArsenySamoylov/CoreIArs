@@ -11,24 +11,27 @@ int main(const int argc, const char* const argv[])
         printf("Press any key to close program\n");
 
         getchar();
-        return -1;
+        return WROMG_NUMBER_OF_ARGUMENTS;
         }
     
-    ExeProgram* program = OpenExeProgram (argv[1]);
-    
-    if (!program)  return -1;
-    
-    VerificateExe(program);
-    $
-    StackPush(program->CPU_stk, 666);
-    $
-    //ShowHeap( (program->CPU_stk)->heap, (program->CPU_stk).top);
-    
-    getchar();
-    //DumpCPUandStack(program, &CPU_stack);
-    //getchar();
-
-    int status = ExecuteCPUCommands(program);
+    ArsCore core = {};
+    if ( (int flag_error = CtorArsCore (&core, argv[1])) != SUCCESS)
+        {
+        func_message("Can't create ArsCorp, (error %d)\n", flag_error);
+        return MAIN_ERROR;
+        }
+            
+    if ( (int status = ExecuteCPUCommands(&core)) != SUCCESS)
+        {
+        func_message("Ebat, something went wromg :/ (error %d)\n", ); 
+        return MAIN_ERROR;
+        }
+           
+    if ( (int status = DtorArsCore(&core)) != DEAD)
+        {
+        func_message("Ebat, You can't even kill f*cking Core (error %d)\n", status);
+        return MAIN_ERROR;
+        }
 
     return 0;    
     }

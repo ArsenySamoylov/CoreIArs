@@ -2,13 +2,16 @@
 #define ZAEBET_PARSIT_ETY_XYUNU
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 
 #include "Config.h"
+#include "Architecture.h"
 
-comands      CompareLineWithComands(const char* line);
-int          CompareWithRegister   (const char* reg);
-cpu_register IsReg (const char* line);
+cmd_code      CompareLineWithComands(const char* line);
+reg_arg       IsReg (const char* line);
+
+int stricmp (const char *s1, const char *s2 );
 
 #endif

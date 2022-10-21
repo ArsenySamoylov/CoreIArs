@@ -2,10 +2,6 @@
 
 #include "Asm.h"
 
-// #ifndef LINUS_IS_MY_LIFE
-// #warning "YOU SUCK!!\n"
-// #endif
-
 int main(const int argc, const char* const argv[])
     {
     if (argc != 2)
@@ -14,23 +10,28 @@ int main(const int argc, const char* const argv[])
         printf("Press any key to close program\n");
 
         getchar();
-        return -1;
+        return WROMG_NUMBER_OF_ARGUMENTS;
         }
-
-    // GetFullProgammName(argv[1]);
-    //printf("%s\n", argv[0]);
 
     Asmprogram* new_program = OpenAssmprogram(argv[1]);
     if (!new_program)
         {
-        printf("ERORR OCCURED MAKING NEW ASM PROGRAM!!!\n");
-        return -2;
+        printf("ERORR OCCURED MAKING NEW ASM PROGRAM (%s)!!!\n", argv[1]);
+        return MAIN_ERROR;
         } 
     
-    TranslateSrcprogrameToBinaryCode (new_program);
+    int status = MakeCmdCode (new_program);
+    if (status == TRANSLATER_SUCCESS)
+        {
+        printf("Program successfully translated code for ArsCPU\n");
+        }
    
-    MakeExeForCPU (new_program, argv[1]);
-    
+    status = MakeExeForCPU (new_program, argv[1]);
+    if (status == SUCCESS)
+        {
+        printf("Program successfully put code in file: %s.ars\n", argv[1]);
+        }
+
     CloseAssmprogram (new_program);
     
     return 0;

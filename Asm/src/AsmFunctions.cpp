@@ -1,357 +1,361 @@
 #include "Asm.h"
+#include "show_binary.h"
 
-//! @todo 3) switch
-//!       4) listing
+imm_arg IsLabel (const char* line, Asmprogram* asm_program);
 
-Asmprogram* OpenAssmprogram (const char* src_name)
+#define COMPILE_ERROR(number_of_compilation)                    \
+                                            do {                   \
+                                            func_message("Error in" #number_of_compilation "compilation"); \
+                                            return FAILURE;     \
+                                            } while(0)                  
+int MakeCmdCode (Asmprogram* asm_program)
     {
-    const char* full_src_name = GetFullProgammName (src_name);
-    
-    //printf("SRC_NAME: %s\n", src_name);
+    VERIFICATE_ASM_PROGRAM(return FAILURE, asm_program);
 
-    const char* src_buffer = get_src_file (full_src_name);
+    int compilation_status = FirstCompilation(asm_program);
+    if (compilation_status != SUCCESS)
+        COMPILE_ERROR(first);
 
-    if (!src_buffer)
-        return NULL;
-    
-    //printf("%s\n", src_buffer);
-    
-    size_t number_of_lines = CountLines (src_buffer, '\n');
-    const char** lines_array = SplitBufferIntoLines (src_buffer, number_of_lines);
-    
-    //  int i = 0;
-    //  while(lines_array[i] != NULL)
-    //      printf("line %d: %s", i, lines_array[i++]); 
-    
-    Asmprogram* temp = (Asmprogram*) calloc (1, sizeof(Asmprogram));
-    *temp = {src_buffer, number_of_lines, lines_array, NULL, 0};
+    compilation_status = SecondCompilation(asm_program);
+    if (compilation_status != SUCCESS)
+        COMPILE_ERROR(second);
 
-    //free(full_src_name);
-    return temp;
+    printf("ebar %zu\n", asm_program->number_of_CPU_comands);
+  
+    return TRANSLATER_SUCCESS;
     }
 
-void CloseAssmprogram (Asmprogram* asm_program)
+int FirstCompilation (Asmprogram* asm_program)
     {
-    if (!asm_program)
-        return;
-
-    free((void*)(asm_program->src_program));
-    free(asm_program->lines_array);
-    free(asm_program->binary_code);
-
-    return;
-    }
-
-int TranslateSrcprogrameToBinaryCode (Asmprogram* asm_program)
-    {
-    if (!asm_program)
-        return EMPTY_ASM_PROGRAM_POINTER;
-    // if (!asm_program->src_program)
-    //     return ;
-    // if (asm_program->number_of_lines ==)
-    //     return;
-    // if (!asm_program->lines_array)
-    //     returnl
+    VERIFICATE_ASM_PROGRAM(return FAILURE, asm_program);
 
     const char** lines_array     = asm_program->lines_array;
     size_t       number_of_lines = asm_program->number_of_lines;
-
-    // printf("%s: number of lines %d\n", __func__, number_of_lines);
-    // printf("Last line: %s\n\n", lines_array[number_of_lines-1]);
-    
-    comands* comands_array = NULL;
-    
-    size_t MAX_NUMBER_OF_COMANDS = 2 * number_of_lines;
-    size_t COMANDS_ARRAY_LIMIT   = MAX_NUMBER_OF_COMANDS - sizeof(argument) - sizeof(cpu_register) - sizeof(comands);
-    
-    comands_array = (comands*) calloc (MAX_NUMBER_OF_COMANDS, sizeof(comands));
-    
-    if (!comands_array)
-           return DYNAMIC_MEMORY_ERORR;
     
     size_t current_line = 0;
     size_t pc           = 0;
     
-    CloseComments(asm_program->src_program, ';');
-    
-    int hlt_flag = 0;
+    RemoveComments(asm_program->src_program, ';'); 
+    RemoveComments(asm_program->src_program, '\n');
 
-    while (current_line < number_of_lines && !hlt_flag)
+    size_t i = 0;
+    while (i < number_of_lines)
         { 
-        //printf("pc: %d, COMANDS_LIMIT: %d\n", pc, COMANDS_ARRAY_LIMIT);
-        if (pc >= COMANDS_ARRAY_LIMIT)
-            {
-            COMANDS_ARRAY_LIMIT += MAX_NUMBER_OF_COMANDS;
+        const char* current_line = SkipSpaces(lines_array[i]);
 
-            comands* temp = (comands*) realloc (comands_array, sizeof(comands) * COMANDS_ARRAY_LIMIT);
-            if (!temp)
-                return DYNAMIC_MEMORY_ERORR;
+        if (*current_line == ':')
+            {
+            label* new_label = (asm_program ->labels_arr) + (asm_program->current_number_of_labels);
+            ++(asm_program->current_number_of_labels);
             
-            comands_array = temp;
+            new_label->name = SkipSpaces(current_line + 1);
+            new_label->cmd_address = pc;
+
+            ++i;
+            continue;
             }
 
-        // printf("  cyka  MAX_number_of_cmd = %d\n",MAX_NUMBER_OF_COMANDS);
-        //
-        // printf("cyka2\n");
-
-        char asm_comand[_MAX_COMAND_LENGTH_] = "";
+        char asm_comand[_MAX_COMAND_LENGTH_] = {0};
         
         int n = 0;
-        sscanf (lines_array[current_line], "%s%n", asm_comand, &n);  
-        //printf("cyka3\n");
-        switch (comands cmd = CompareLineWithComands (asm_comand))
+        sscanf (current_line, "%s%n", asm_comand, &n);  
+        printf("pc %zu, after \n", pc);
+        switch (cmd_code cmd = CompareLineWithComands (asm_comand))
+            {
+            #define CPU_CMD(name, num, arg, code) \
+                case num :                       \
+                        pc++;                     \
+                                                  \
+                        if (arg)                  \
+                            {                     \
+                            const char* line = current_line + n; \
+                                                                 \
+                            imm_arg     imm = 0;                 \
+                            reg_arg     reg = 0;                 \
+                                                                 \
+                            cmd_code mask = GetArguments(SkipSpaces(line), &imm, &reg, asm_program); \
+                                                                                        \
+                            if (mask & IMM_ARGUMENT)             \
+                                pc += sizeof(imm);               \
+                                                                 \
+                            if (mask & REG_ARGUMENT)             \
+                                pc += sizeof(reg);               \
+                            }                                    \
+                                                                 \
+                        break;              
+
+            #include "../../Arch/cmd.h"
+            #undef CPU_CMD
+        
+            case UNKNOWN_COMAND:
+            default:
+                {
+                printf("Unknow comand: %.4s\n, at line %zu\n", current_line, i);
+
+                return ASM_TRNSLTR_UNKNOWN_COMAND;
+                }
+        
+            }
+        i++;
+        }
+    asm_program->number_of_compiliation += 1;
+
+    ShowLabelsTable(asm_program);
+    
+    return SUCCESS;
+    }
+
+
+int SecondCompilation (Asmprogram* asm_program)
+    {
+    VERIFICATE_ASM_PROGRAM(return FAILURE, asm_program);
+    
+    const char** lines_array     = asm_program->lines_array;
+    size_t       number_of_lines = asm_program->number_of_lines;
+    
+    size_t current_line = 0;
+    size_t pc           = 0;
+    
+    size_t code_arr_current_limit = number_of_lines * 2 - sizeof(imm_arg) - sizeof(reg_arg) - sizeof(cmd_code);
+    
+    cmd_code* code_array = (cmd_code*) calloc (number_of_lines * 2, sizeof(code_array[0]));
+    CHECK_PTR_STD_RET(code_array, BAD_CALLOC);
+    
+    FILE* listing = fopen("Examples/Listing/Ebat.lst", "w");
+    CHECK_PTR_STD_RET(listing, ERROR_OPENING_FILE);
+
+    size_t i = 0;
+    while (i < number_of_lines)
+        { 
+        const char* current_line = SkipSpaces(lines_array[i]);
+        
+        if (*current_line == ':')
+            {
+            i++;
+            continue;
+            }
+        
+        char asm_comand[_MAX_COMAND_LENGTH_] = {0};
+        
+        int n = 0;
+        sscanf (current_line, "%s%n", asm_comand, &n);  
+        
+        fprintf(listing, "%zu %s", pc, asm_comand);
+        
+        switch (cmd_code cmd = CompareLineWithComands (asm_comand))
         {
-        case -1:
-            {
-            printf("%s: Null lines array pointer!\n", __func__);
-            return NULL_LINES_ARRAY_PTR;
-            }
-        case CPU_PUSH:
-            {
-            const char* line = lines_array[current_line] + n;
+        #define CPU_CMD(name, num, arg, code) \
+            case num:                       \
+                if (!arg)                     \
+                    code_array[pc++] = cmd;   \
+                                              \
+                if (arg)                      \
+                    {                         \
+                    const char* line = current_line + n; \
+                                              \
+                    imm_arg     imm = 0;      \
+                    reg_arg     reg = 0;      \
+                                              \
+                    cmd_code mask = GetArguments(SkipSpaces(line), &imm, &reg, asm_program);   \
+                                              \
+                    if (!mask)                \
+                        {                     \
+                        printf("Wrong argument (line %.10s) for comand,"          \
+                               "imm = %d, reg = %d \n", line - n, imm, reg);      \
+                        return WRONG_ARGUMENT;\
+                        }                     \
+                                              \
+                    cmd |= mask;              \
+                    code_array[pc++] = cmd;   \
+                                              \
+                    if (cmd & IMM_ARGUMENT)   \
+                        {                     \
+                        *((imm_arg*)(code_array + pc)) = imm; \
+                        pc += sizeof(imm);    \
+                                              \
+                        fprintf(listing, " %d ", imm); \
+                        }                     \
+                                              \
+                    if (cmd & REG_ARGUMENT)   \
+                        {                     \
+                        *((reg_arg*)(code_array + pc)) = reg; \
+                        pc += sizeof(reg);    \
+                                              \
+                        fprintf(listing, " %d ", reg);        \
+                        }                     \
+                    }                         \
+                                              \
+                break;                        
+        
+        #include "cmd.h"
+        #undef CPU_CMD
 
-            argument     arg = 0;
-            cpu_register reg = 0;
-
-            comands mask = GetArguments(line + 1, &arg, &reg); 
-
-            // printf("Arg: %d, Reg: %d\n", arg, reg);
-            // printf("mask: ");
-
-            unsigned temp = mask;
-            int s[8] = {0,0,0,0, 0,0,0,0};
-            for(int i = 0; i < 8; i++)
-                {
-                s[i] = temp % 2;
-                temp /= 2;
-                //printf ("%d", s[i]);
-                }
-
-            for (int i =0; i<8;i++)
-                printf("%d", s[7-i]);
-            
-            printf("\n");
-            getchar();
-            //
-            if (!mask)
-                {
-                printf("Wrong argument (line %.10s) for comand PUSH, arg = %d, reg = %d \n", line - n, arg, reg);
-                return WRONG_PUSH_ARGUMENT;
-                }
-            
-            cmd |= mask;
-            comands_array[pc++] = cmd;
-
-            if (cmd & IMM_ARGUMENT)
-                {
-                *((int*)(comands_array + pc)) = arg;
-                pc += sizeof(arg);
-                }
-            
-            if (cmd & REG_ARGUMENT)
-                {
-                *((cpu_register*)(comands_array + pc)) = reg;
-                pc += sizeof(reg);
-                }
-            break;
-            }
-        case CPU_POP:
-            {
-            const char* line = lines_array[current_line] + n;
-
-            argument     arg = 0;
-            cpu_register reg = 0;
-
-            comands mask = GetArguments(line, &arg, &reg);
-
-            if (!mask)
-                {
-                printf("Wrong argument (line %.10s) for comand POP, arg = %d, reg = %d \n", line - n, arg, reg);
-                return WRING_POP_ARGUMENT;
-                }
-            if (! (mask & MEMORY_ARGUMENT))
-                {
-                printf("Ebat, for pop argument have to be in [brakes] \n");
-                return WRING_POP_ARGUMENT;
-                }
-
-            cmd |= mask;
-            comands_array[pc++] = cmd;
-
-            if (cmd & IMM_ARGUMENT)
-                {
-                *((int*)(comands_array + pc)) = arg;
-                pc += sizeof(arg);
-                }
-            
-            if (cmd & REG_ARGUMENT)
-                {
-                *((cpu_register*)(comands_array + pc)) = reg;
-                pc += sizeof(reg);
-                }
-            break;
-            }
-        case CPU_HLT:
-            {
-            printf("This is hlt, I won't check anything below!\n");
-            comands_array[pc] = cmd;
-            pc++;
-            
-            hlt_flag = 1;
-            break;
-            }
-
-        case CPU_ADD: 
-        case CPU_SUB:
-        case CPU_MUL:
-        case CPU_DIV: 
-        case CPU_OUT:
-        case CPU_IN :
-            {
-            // const char* line = lines_array[current_line];
-            // printf("LINE: %.10s\n", line);
-
-            comands_array[pc] = cmd;
-            ++pc;
-
-            break;
-            }   
-
-        case CPU_UNKNOWN_COMAND:
+        case UNKNOWN_COMAND:
         default:
             {
-            printf("Unknow comand: %.4s\n", lines_array[current_line]);
+            printf("Unknow comand: %.4s\n, at line %zu\n", current_line, i);
 
             return ASM_TRNSLTR_UNKNOWN_COMAND;
             }
+        
+        }
+         if (pc >= code_arr_current_limit)
+            {
+            code_arr_current_limit += number_of_lines * 2;
+
+            cmd_code* temp = (cmd_code*) realloc (code_array, sizeof(cmd_code) * code_arr_current_limit);
+            CHECK_PTR_STD_RET(temp, BAD_REALLOC);
+            
+            code_array = temp;
+            }
+
+        i++;
+        fprintf(listing, "\n");
         }
 
-        current_line++;
-        }
+    cmd_code* temp = (cmd_code*)  realloc (code_array, pc * sizeof(cmd_code)); 
+    CHECK_PTR_STD_RET(temp, BAD_REALLOC);
 
-    // printf("Number of CPU comands: %d\n", pc);
+    asm_program->binary_code            = temp;
+    asm_program->number_of_CPU_comands  = pc;
+    asm_program->number_of_compiliation += 1;
 
-    comands* temp = (comands*) realloc (comands_array, pc * sizeof(comands));
-    if (!temp)
-        return DYNAMIC_MEMORY_ERORR;
-
-    asm_program->binary_code           = temp;
-    asm_program->number_of_CPU_comands = pc;
-
-    return TRANSLATER_SUCCESS;
+    return SUCCESS;
     }
 
 int MakeExeForCPU (Asmprogram* program, const char* exe_program_name)
     {
-    if (!program)
-        return -1;
-    if (!exe_program_name)
-        return -1;
-    if (!program->binary_code)
-        return -1;
+    VERIFICATE_ASM_PROGRAM(return FAILURE, program);
+    CHECK_PTR_RET(exe_program_name, return FAILURE);
 
-    // check program data
-    const char* full_exe_name = GetFullExecutingprogramName (exe_program_name);
+    const char* full_exe_name = GetFullExecutingprogramName (exe_program_name); 
+    CHECK_PTR_RET(full_exe_name, FAILURE);
 
     FILE* exe_program = fopen (full_exe_name, "wb");
-    if (!exe_program)
-        return -1;
-
+    CHECK_PTR_STD_RET(exe_program, ERROR_OPENING_FILE);
+   
     IntelIArsSignature signature = {SOFT_CPU_VERSION, program->number_of_CPU_comands};
 
     size_t flag_signature = fwrite (&signature, sizeof(signature), 1, exe_program);
     if (flag_signature != 1)
-        return -1;
+        return FAILURE;
 
-    size_t flag_commands = fwrite (program->binary_code, sizeof(comands), program->number_of_CPU_comands,exe_program);
+    size_t flag_commands = fwrite (program->binary_code, sizeof(cmd_code), program->number_of_CPU_comands,exe_program);
     if (flag_commands != program->number_of_CPU_comands)
-        return -1;
+        return FAILURE;
 
-    return 0;
+    return SUCCESS;
     }
-  
-comands GetArguments (const char* line, argument* arg, cpu_register* reg)
-    {
-    if (!line)   return 0;
-    if (!arg)    return 0;
-    if (!reg)    return 0;
 
-    comands mask = 0;
+size_t SetArguments (Asmprogram* asm_program, cmd_code* code_array, const char* line) 
+    {
+    CHECK_PTR_STD_RET (line, return 0);
+    VERIFICATE_ASM_PROGRAM(asm_program);
+
+    size_t pc = 0; 
+
+    imm_arg     imm = 0;      
+    reg_arg     reg = 0;      
+                              
+    cmd_code mask = GetArguments(SkipSpaces(line), &imm, &reg, asm_program);   
+                                
+    if (!mask)                
+        {                     
+        func_message("Wrong argument (line %.10s) for comand,"          
+                "imm = %d, reg = %d \n", line, imm, reg);      
+        return 0;
+        }                     
+                              
+    cmd |= mask;              
+    code_array[pc++] = cmd;   
+                              
+    if (cmd & IMM_ARGUMENT)   
+        {                     
+        *((imm_arg*)(code_array + pc)) = imm;
+        pc += sizeof(imm);    
+        }                     
+                              
+    if (cmd & REG_ARGUMENT)   
+        {                     
+        *((reg_arg*)(code_array + pc)) = reg;
+        pc += sizeof(reg);    
+        } 
+
+    return pc;                    
+    }
+
+cmd_code GetArguments (const char* line, imm_arg* imm, reg_arg* reg, Asmprogram* asm_program)
+    {
+    CHECK_PTRS_RET(return 0, line, imm, reg);
+    VERIFICATE_ASM_PROGRAM(return 0, asm_program);
+
+    cmd_code mask = 0;
     
-    char first_char = 0;
-    sscanf(line, "%c", &first_char);
-    
+    char first_char = *line;
     if (first_char == '[')
         {
-        char* closing_braket = strchr(line, ']');
+        const char* closing_braket = strchr(line, ']');
 
         if (!closing_braket)
-            return NO_ARGUMENTS;
-        
-        *closing_braket = '\0';
+            {
+            printf ("Syntax error: missing closing braket\n");
+            return SYNTAX_ERROR;
+            }
 
         mask |= MEMORY_ARGUMENT;
         ++line;
-        //printf("Line without brk: %s", line);
+        }
+    
+    if (first_char == ':')
+        {
+        imm_arg temp = IsLabel(line + 1, asm_program);
+        if (temp != -1)
+            {
+            *imm = (imm_arg) (temp);
+            mask |= IMM_ARGUMENT;
+
+            return mask;
+            } 
+
+        if (asm_program->number_of_compiliation) 
+            {
+            printf("%s - is wrong label\n", line);
+            return 0;
+            }
+        
+        
+        *imm = -666;
+        mask |= IMM_ARGUMENT;
+
+        return mask; 
         }
 
-    printf("Why??\n");
-    char test[30] = " 36 ";
-    int a;
-    sscanf(test, "%d", &a);
-    printf("Zaebesh: %d\n", a);
+    int n = 0;
+    if (sscanf(line, "%d%n", imm, &n))
+        {    
+        mask |= IMM_ARGUMENT;
 
-    if (sscanf(line, "%d", arg))
-        {
-        //
-        printf("Ebat!, schital chislo: %d\n", *arg);
-        //
-        mask |=IMM_ARGUMENT;
-
-        int n = 0;
-        sscanf(line, "%*s%n", &n);
-        //printf("n: %d\n", n);
-        //getchar();
-        line += n;
-        
-        char plus = 0;
+        line += n + 1;
+        char plus = *(line);
     
-        sscanf(line, " %c%n", &plus, &n);
-        //printf("PLUS ISss: %c\n", (plus == ' ') ? '_':plus);
-
         if (plus != '+')
-            {
-            //printf("HEHEHEHHE\n\n");
             return mask;
-            }
-
-        line += n;
-
-        // printf("n: %d\n", n);
-        // printf("CHto dalshe: %.3s\n", line);
+        line = SkipSpaces (line);
+        line += 1; // skip '+' 
         }
     
     char reg_code[33] = "";
-    // //
-    // printf("Sscanf: %d\n", sscanf(line, "%s", reg_code));
-    // //
     if (sscanf(line, "%s", reg_code))
         {
         *reg = IsReg(reg_code);
 
         if (!(*reg))
             {
-            printf("Govno register\n");
-            //
-            printf("Reg_code: %s\n", reg_code);
-            //
+            printf("System: SHITREG: Govno register\n");
             return NO_ARGUMENTS;
             }
 
         mask |= REG_ARGUMENT; 
-        
-        // printf("Reg: %d\n", *reg);
-        // printf("Mask: %d\n", mask);  
         }
     
     return mask;
@@ -359,24 +363,74 @@ comands GetArguments (const char* line, argument* arg, cpu_register* reg)
 
 const char*  GetFullProgammName (const char* src_name)
     {
-    size_t     full_name_length          = strlen(src_name) + strlen(_STD_COMMAND_FILE_PREFIX_) + 100;
-    char*      direction_to_command_file = (char*) calloc (full_name_length, sizeof(char));
+    if (!src_name) return NULL;
+
+    size_t full_name_length          = strlen(src_name) + strlen(_STD_COMMAND_FILE_PREFIX_) + 100;
+    char*  direction_to_command_file = (char*) calloc (full_name_length, sizeof(char));
+    if   (!direction_to_command_file)
+         return NULL;
 
     snprintf (direction_to_command_file, full_name_length, "%s%s", _STD_COMMAND_FILE_PREFIX_, src_name);
-    
-    //printf("%s", direction_to_command_file);
-    
+        
     return direction_to_command_file;
+    }
+
+imm_arg IsLabel(const char* line, Asmprogram* asm_program)
+    {
+    VERIFICATE_ASM_PROGRAM(return -1, asm_program);
+
+    int    number_of_labels = asm_program->current_number_of_labels ;
+    label* lables_arr       = asm_program->labels_arr;
+
+    line = SkipSpaces(line);
+
+    printf("Mb this is label %s\n", line);
+    for(int i = 0; i < number_of_labels; i++)
+        {
+        label* lbl = lables_arr + i;
+
+        $s(line)
+        $s(lbl->name)
+
+        if (!stricmp(line, lbl->name))
+            {
+            $ $ $ 
+                $s(line)
+                $s(lbl->name)
+                $i((lbl->cmd_address))
+            return (imm_arg) (lbl->cmd_address);
+            }
+        }
+
+    return -1;
     }
 
 const char*  GetFullExecutingprogramName (const char* exe_name)
     {
+    if (!exe_name) return NULL;
+    
     size_t     full_name_length          = strlen(exe_name) + strlen(_STD_EXECUTING_program_PREFIX_) + strlen(_STD_EXECUTING_program_SUFFIX_) + 100;
     char*      direction_to_exe_program = (char*) calloc (full_name_length, sizeof(char));
+    if (!direction_to_exe_program)
+        return NULL;
 
     snprintf (direction_to_exe_program, full_name_length, "%s%s%s", _STD_EXECUTING_program_PREFIX_, exe_name, _STD_EXECUTING_program_SUFFIX_);
-    
-    //printf("%s", direction_to_exe_program);
-    
+        
     return direction_to_exe_program;
+    }
+
+void ShowLabelsTable(Asmprogram* asm_program)
+    {
+    VERIFICATE_ASM_PROGRAM(return, asm_program);  
+    
+    label* labels_arr = asm_program->labels_arr;
+    int number_of_labels = asm_program->current_number_of_labels;
+  
+    for(int i = 0; i < number_of_labels; i++)
+        {
+        label* lbl = labels_arr + i; 
+        func_message("label[%d]: pc %zu, name %s\n", i, lbl->cmd_address, lbl->name);
+        } 
+    
+    return;
     }

@@ -1,0 +1,10 @@
+in
+pop rax
+push 1000
+push 10
+push rax
+:mul
+mul
+jb : mul
+out
+hlt

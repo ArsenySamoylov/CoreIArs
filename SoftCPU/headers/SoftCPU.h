@@ -4,49 +4,53 @@
 #include <stdlib.h>
 
 #include "Config.h"
-#include "my_buffer.h"
+#include "Architecture.h"
 
 #include "SuperStack.h"
 
+#include "DebugCPU.h"
+#include "CommonErrors.h"
+#include "my_buffer.h"
+#include "EasyDebug.h"
 
 const int CPU_STACK_INITIAL_CAPACITY = 10;
+const int CALL_STACK_INITIAL_CAPACITY = 20;
 const int NUMBER_OF_REGISTERS = 5;
 
 const int _RAM_SIZE_ = 2048;
+const int _REGISTER_ARRAY_SIZE_ = 5;
+const cmd_code MASK = 224; // 1110 0000
 
-const comands MASK = 224; // 1110 0000
-
-enum EXECUTE_ERRORS
+struct ArsCore
     {
-    WRONG_PROGRAM_PTR,
-    WRONG_ARGUMENT,
-
-    UNKNOWN_COMAND,
-
-    BIG_SUCCESS,
-    };
-
-struct ExeProgram
-    {
-    const comands* comands_array;
-    SuperStack*    CPU_stk;
+    const cmd_code* comands_array;
+    SuperStack      CPU_stk; 
+    SuperStack      Call_stk;
 
     size_t number_of_comands;
     size_t ip;
 
-    cpu_register* reg_arr;
-
-    bytes* RAM;
+    data  REG_ARR[_REGISTER_ARRAY_SIZE_] = {0};
+    data* RAM;
     };
 
-ExeProgram* OpenExeProgram  (const char* exe_file);
-void        CloseExeProgram (ExeProgram* program);
+enum CTOR_ARS_CORE_ERROR
+    {
+    NULL_CORE_PTR,
+    NULL_ARS_FILE_PTR,
+    WRONG_SIGNATURE,
+    NUMBER_OF_COMANDS_DOESNT_MATCH,
+    NULL_REG_ARR,
+    };
 
-int ExecuteCPUCommands(ExeProgram* program);
+int  CtorArsCore (ArsCore* core, const char* ars_file);
+int  DtorArsCore (ArsCore* core);
+
+int  ExecuteCPUCommands(ArsCore* core);
 
 size_t CheckSignature (FILE* CPU_comands);
 
-#define VerificateExe(program) 
-void DumpCPUandStack (ExeProgram* program, unsigned error_flaf = 0);
-
+void     DumpCPUandStack (ArsCore* core);
+unsigned MedComissionCPU (ArsCore* soldat);
+void     ShowHeap(element_t* heap, ssize_t top);
 #endif

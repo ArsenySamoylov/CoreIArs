@@ -1,0 +1,8 @@
+0 push 24 
+5 push 10  2 
+11 push 5  1 
+17 push 6 
+22 push 10  1 
+28 push 1 
+30 add
+31 hlt

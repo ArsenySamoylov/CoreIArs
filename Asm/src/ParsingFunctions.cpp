@@ -1,56 +1,43 @@
 #include "Parsing.h"
 
+// const char* PROCESSOR_COMANDS[] =
+//     {
+//     #define CPU_CMD(name, num, arg, code) #name,
+//     #include "cmd.h"
+//     #undef CPU_CMD
+//     };
 
-const char* PROCESSOR_COMANDS[] =
+int stricmp (const char *s1, const char *s2 )
     {
-    "hlt",
+    int i = 0;
 
-    "push",
-    "pop",
-    
-    "add",
-    "sub",
-    "mul",
-    "div",
-    "out",
-    "in",
-    };
-    
-comands CompareLineWithComands (const char* asm_comand)
+    for( ; s1[i] && s2[i] ; i++)
+        if ((tolower(s1[i]) != tolower(s2[i])))
+            return s1[i] - s2[i];   
+        
+    return (s1[i] - s2[i]);
+    }
+
+cmd_code CompareLineWithComands (const char* asm_comand)
     {
     if (!asm_comand)
         return -1;
+    #define CPU_CMD(name, num, arg, code)                   \
+         if (!stricmp(asm_comand, #name))                   \
+            return num;                                     \
 
-    if (!stricmp(asm_comand, PROCESSOR_COMANDS[CPU_HLT])) 
-            return CPU_HLT;
+    #include "cmd.h"
+    #undef CPU_CMD
 
-    if (!stricmp(asm_comand, PROCESSOR_COMANDS[CPU_PUSH])) 
-            return CPU_PUSH;
-    
-    if (!stricmp(asm_comand, PROCESSOR_COMANDS[CPU_ADD])) 
-            return CPU_ADD;
-
-    if (!stricmp(asm_comand, PROCESSOR_COMANDS[CPU_SUB])) 
-           return CPU_SUB;
-    
-    if (!stricmp(asm_comand, PROCESSOR_COMANDS[CPU_MUL])) 
-           return CPU_MUL;
-
-    if (!stricmp(asm_comand, PROCESSOR_COMANDS[CPU_OUT])) 
-           return CPU_OUT;
-    
-    if (!stricmp(asm_comand, PROCESSOR_COMANDS[CPU_IN])) 
-           return CPU_IN;
-
-    return CPU_UNKNOWN_COMAND;
+    return UNKNOWN_COMAND;
     }
 
-cpu_register IsReg (const char* line)
+reg_arg IsReg (const char* line)
     {
     if (!line)
         return ERORR_REG;
 
-    int result = tolower(*(line+1)) + 1 - 'a';
+    int result = tolower(*(line + 1)) + 1 - 'a';
 
-    return (result > 0 && result < 20) ? result : 0;
+    return (reg_arg) ((result > 0 && result < 20) ? result : 0);
     }
