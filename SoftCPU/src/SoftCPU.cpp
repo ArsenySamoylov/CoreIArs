@@ -15,23 +15,11 @@ int main(const int argc, const char* const argv[])
         }
     
     ArsCore core = {};
-    if ( (int flag_error = CtorArsCore (&core, argv[1])) != SUCCESS)
-        {
-        func_message("Can't create ArsCorp, (error %d)\n", flag_error);
-        return MAIN_ERROR;
-        }
-            
-    if ( (int status = ExecuteCPUCommands(&core)) != SUCCESS)
-        {
-        func_message("Ebat, something went wromg :/ (error %d)\n", ); 
-        return MAIN_ERROR;
-        }
-           
-    if ( (int status = DtorArsCore(&core)) != DEAD)
-        {
-        func_message("Ebat, You can't even kill f*cking Core (error %d)\n", status);
-        return MAIN_ERROR;
-        }
+    SOZDAY(core, argv[1]);
+    
+    EBANI_PROGRAMKU(core);
+    
+    YBEI_DURU(core);         
 
-    return 0;    
+    return MAIN_SUCCESS;    
     }

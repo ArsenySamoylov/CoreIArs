@@ -1,6 +1,8 @@
 #ifndef SUPER_DUPER_MEGA_XUEGA_STACK
 #define SUPER_DUPER_MEGA_XUEGA_STACK
 
+#pragma GCC diagnostic ignored "-Wconversion"
+
 //! @note if you want to change settings than
 //!          look up in SuperStackConfig.h
 #include "SuperStackConfig.h"

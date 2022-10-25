@@ -16,12 +16,16 @@ enum CommonErrors
     NULL_STRUCTURE_MEMBER,
 
     SYNTAX_ERROR,
-
-    MAIN_ERROR,
     
     SUCCESS, 
     FAILURE,   
     };
+
+enum ANOTHE_COMMON_ERRORS
+  {
+  MAIN_SUCCESS  = 0,
+  MAIN_ERROR,
+  };
 
 static const char* COMMON_ERROR_MESSAGES[] =
                   {

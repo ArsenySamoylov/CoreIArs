@@ -12,6 +12,7 @@
 cmd_code      CompareLineWithComands(const char* line);
 reg_arg       IsReg (const char* line);
 
-int stricmp (const char *s1, const char *s2 );
+int stricmp         (const char *s1, const char *s2 );
+int skip_spaces_cmp (const char *s1, const char *s2 );
 
 #endif

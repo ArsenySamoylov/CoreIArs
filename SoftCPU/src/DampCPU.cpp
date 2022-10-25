@@ -3,11 +3,9 @@
 
 #include <stdlib.h>
 
-static void ShowCPUcomands (const cmd_code* const comands_array, size_t number_of_comands, size_t ip);
-
 void DumpCPUandStack(ArsCore* core)
     {
-    VERIFICATE_CORE(core);
+    VERIFICATE_CORE(core, return);
 
     const cmd_code* comands_array = core->comands_array; // medcomission checked this ptr 
 
@@ -18,10 +16,7 @@ void DumpCPUandStack(ArsCore* core)
     ShowHeap (stk_ptr->heap, stk_ptr->top);
     }
 
-const size_t START_IP_FOR_DUMP = 3;
-const size_t END_IP_FOR_DUMP   = 10;
-
-static void ShowCPUcomands (const cmd_code* const comands_array, size_t number_of_comands, size_t ip)
+void ShowCPUcomands (const cmd_code* const comands_array, size_t number_of_comands, size_t ip)
     {
     CHECK_PTR_MSG_RET(comands_array, return, "NULL cmd_code array pointer\n");
 
@@ -45,8 +40,6 @@ static void ShowCPUcomands (const cmd_code* const comands_array, size_t number_o
     
     return;
     }
-
-const ssize_t NUMBER_OF_LAST_HEAP_ELEMENTS = 4;
 
 void ShowHeap(element_t* heap, ssize_t top)
     {

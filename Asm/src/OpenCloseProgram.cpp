@@ -10,9 +10,8 @@ Asmprogram* OpenAssmprogram (const char* src_name)
     char* src_buffer = (char*) GetSrcFile (full_src_name);
     CHECK_PTR_RET(src_buffer, return NULL);
     
-    
     size_t number_of_lines = CountLines (src_buffer, '\n');
-    const char** lines_array = SplitBufferIntoLines (src_buffer, number_of_lines);
+    const char** lines_array = DivideBufferIntoLines (src_buffer, number_of_lines);
 
     label* labels_arr = (label*) calloc(_MAX_NUMBER_OF_LABELS_, sizeof(labels_arr[0]));
     CHECK_PTR_RET(labels_arr, return NULL);

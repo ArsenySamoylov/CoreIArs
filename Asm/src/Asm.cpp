@@ -2,6 +2,8 @@
 
 #include "Asm.h"
 
+FILE* Listing = fopen("Examples/Listing/Ebat.lst", "w");
+
 int main(const int argc, const char* const argv[])
     {
     if (argc != 2)
@@ -21,15 +23,21 @@ int main(const int argc, const char* const argv[])
         } 
     
     int status = MakeCmdCode (new_program);
-    if (status == TRANSLATER_SUCCESS)
+    if (status == SUCCESS)
+        printf("Program successfully translated code for ArsCPU \n");
+    else
         {
-        printf("Program successfully translated code for ArsCPU\n");
+        printf("Ebat, error in compilation proceess\n");
+        return MAIN_ERROR;
         }
-   
+
     status = MakeExeForCPU (new_program, argv[1]);
     if (status == SUCCESS)
+        printf("Program successfully put code in file: %s.ars\n\n\n", argv[1]);
+    else
         {
-        printf("Program successfully put code in file: %s.ars\n", argv[1]);
+        func_message("Erorr occurred making ars file\n");
+        return MAIN_ERROR;
         }
 
     CloseAssmprogram (new_program);

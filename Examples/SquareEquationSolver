@@ -1,0 +1,376 @@
+call :MAIN
+hlt
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+:MAIN
+
+call : HELLO
+
+call : EBANI_QUADRATKU
+
+call :GOODBYE
+hlt
+ret
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :EBANI_QUADRATKU
+
+    call : GET_COEFF
+    call :SOLVE
+
+    ret
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+        :SOLVE
+        push rax
+        push 0
+        jne :SQUARE_EQ
+
+            call :LINEAR
+            ret
+
+        :SQUARE_EQ
+        call :DIS
+
+        push 0
+        push rdx
+        jae : NEXT_DIS_CHECK
+
+            call : PRINT_NO_ROOTS
+            ret
+
+        :NEXT_DIS_CHECK
+        push rdx
+        push 0
+        jne : TWO_ROOTS
+
+            push -2
+            push rax
+            mul
+
+            push rbx 
+            fdiv
+            call : PRINT_SINGLE_ROOT
+
+            ret
+
+        :TWO_ROOTS
+        push rdx
+        sqrt
+        pop rdx ; rdx = sqrt(DIS)
+
+        push -2
+        push rax
+        mul
+        pop rax ; NOTE! at this point in rax (-2a)
+        
+        ;FIRST ROOT 
+        push rax
+
+        push rbx
+        push -1
+        push rdx
+        mul ; sqrt(DIS) * (-1)
+
+        add; b - sqrt(dis)
+
+        fdiv ; (b-sqrt)/(-2a)
+        
+        call :PRINT_FIRST_ROOT
+
+        ;SECOND ROOT
+        push rax
+
+        push rbx
+        push rdx
+        add ; b + sqrt(DIS)
+
+        fdiv ; (b+sqrt)/(-2a)
+
+        call :PRINT_SECOND_ROOT
+
+        ret
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :LINEAR
+    push rbx
+    push 0
+    jne :CHECK_SECOND_COEFF
+
+        push rcx
+        push 0
+            je :INF_ROOTS
+
+        call :PRINT_ZERO_ROOT
+        
+        ret
+
+        :INF_ROOTS
+        call :PRINT_INF_ROOTS
+
+        ret
+
+    :CHECK_SECOND_COEFF
+    push rcx
+    push 0
+    jne :ONE_ROOT
+
+        call :PRINT_ZERO_ROOT
+
+        ret
+
+    :ONE_ROOT
+    push rbx
+    push rcx
+    fdiv
+
+    push -1
+    mul 
+
+    call :PRINT_SINGLE_ROOT
+    
+    ret
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :GET_COEFF
+
+    call :PRINT_GET_COEFF
+    FIN
+    pop rax
+
+    call :PRINT_GET_COEFF
+    FIN
+    pop rbx
+
+    call :PRINT_GET_COEFF
+    FIN
+    pop rcx
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;call :PRINT_GET_COEFF
+    :DIS
+    push rax
+    push rcx
+    fmul
+    fpush 4
+    fmul
+    
+    push rbx
+    push rbx
+    fmul
+
+    sub
+    
+    pop rdx
+
+    ret
+;-------------------------------------------------------------------------    
+:PRINT_GET_COEFF      
+push 0   ; '\0'
+push 10  ; '\n'
+push 58  ; ':'
+push 116 ; 't'
+push 110 ; 'n'
+push 101 ; 'e'
+push 105 ; 'i'
+push 99  ; 'c'
+push 105 ; 'i'
+push 102 ; 'f'
+push 102 ; 'f'
+push 101 ; 'e'
+push 111 ; 'o'
+push 99  ; 'c'
+push 32  ; ' '
+push 114 ; 'r'
+push 101 ; 'e'
+push 116 ; 't'
+push 110 ; 'n'
+push 'E'  ; 'E'
+OUTS
+
+ret
+
+:PRINT_NO_ROOTS
+push 0  ; '\0'
+push 10 ; '\n'
+push 's'
+push 't'
+push 'o'
+push 'o'
+push 'r'
+push ' '
+push 'o'
+push 'N'
+OUTS
+
+ret
+
+:PRINT_INF_ROOTS
+push 0  ; '\0'
+push 10 ; '\n'
+push 's'
+push 't'
+push 'o'
+push 'o'
+push 'r'
+push ' '
+push 'F'
+push 'N'
+push 'I'
+OUTS
+
+ret
+
+:PRINT_ZERO_ROOT
+push 0  ; '\0'
+push 10 ; '\n'
+push ')'
+push 't'
+push 'o'
+push 'o'
+push 'r'
+push ' '
+push 'o'
+push 'r'
+push 'e'
+push 'z'
+push ' '
+push 'e'
+push 'g'
+push 'n'
+push 'i'
+push 'r'
+push 'C'
+push '('
+OUTS
+
+ret
+
+:PRINT_FIRST_ROOT
+push 0
+push 10
+push 'T'
+push 'O'
+push 'O'
+push 'R'
+push ' '
+push 'T'
+push 'S'
+push 'R'
+push 'I'
+push 'F'
+OUTS
+
+FOUT
+
+ret
+
+:PRINT_SECOND_ROOT
+push 0
+push 10
+push 'T'
+push 'O'
+push 'O'
+push 'R'
+push ' '
+push 'D'
+push 'N'
+push 'O'
+push 'C'
+push 'E'
+push 'S'
+OUTS
+
+FOUT
+
+ret
+
+:PRINT_SINGLE_ROOT
+push 0
+push 10
+push 'T'
+push 'O'
+push 'O'
+push 'R'
+push ' '
+push 'E'
+push 'L'
+push 'G'
+push 'N'
+push 'I'
+push 'S'
+OUTS
+
+FOUT
+
+ret
+
+:GOODBYE
+push 0
+push 10
+push 'E'
+push 'Y'
+push 'B'
+push ''
+push 'D'
+push 'O'
+push 'O'
+push 'G'
+OUTS
+
+ret
+
+:HELLO
+push 0
+push 10
+push '!'
+push '!'
+push '!'
+push 'D'
+push 'L'
+push 'O'
+push 'H'
+push 'E'
+push 'B'
+push  10
+push 'A'
+push 'K'
+push 'T'
+push 'A'
+push 'R'
+push 'T'
+push 'D'
+push 'A'
+push 'U'
+push 'Q'
+push ' '
+push 'e'
+push 'h'
+push 't'
+push ' '
+push 's'
+push 't'
+push 'n'
+push 'e'
+push 's'
+push 'e'
+push 'r'
+push 'p'
+push ' '
+push 'y'
+push 'n'
+push 'e'
+push 's'
+push 'r'
+push 'A'
+push ' '
+push 'G'
+push 'O'
+OUTS
+
+ret
+
+:DBG
+push 0
+push 10
+push 'G'
+push 'B'
+push 'D'
+OUTS
+
+ret
+

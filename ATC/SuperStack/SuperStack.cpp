@@ -83,7 +83,7 @@ void  SSpush (SuperStack* stk, element_t value
 
     verificateSS(stk, location);
     
-    printf("This is push, I am pushing %d\n", value);
+    //printf("This is push, I am pushing %d\n", value);
     /*
     if (!stk->capacity)
         {

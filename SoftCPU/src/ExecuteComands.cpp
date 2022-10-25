@@ -6,13 +6,17 @@ data* GetArgument (ArsCore* core, cmd_code mask);
 
 int ExecuteCPUCommands (ArsCore* core)
     {
-    if (!core) return NULL_PTR; // Oshibka ebat
+    if (!core) return NULL_PTR; 
+    VERIFICATE_CORE(core, return FAILURE);
     
     const cmd_code*   comands_array     = core->comands_array;
     SuperStack*       stk_ptr           = &(core->CPU_stk);
+    SuperStack*       call_stk_ptr      = &(core->Call_stk);
     size_t            number_of_comands = core->number_of_comands;
     data*             REG_ARR           = core->REG_ARR;
     data*             RAM               = core->RAM;
+
+    SetAccuracy(core);
 
     while (core->ip < number_of_comands)
             {
@@ -40,6 +44,7 @@ int ExecuteCPUCommands (ArsCore* core)
                 default:
                     {
                     printf("I don't know %d comand, go buy new CoreIArs for only 300$(bucks)\n", cmd & ~MASK);
+                    $D
                     return UNKNOWN_COMAND;
 
                     break;
@@ -53,9 +58,8 @@ int ExecuteCPUCommands (ArsCore* core)
 
 data* GetArgument (ArsCore* core, cmd_code mask)
     {
-    if (!core)    return NULL;
     if (!mask)    return NULL;
-    VERIFICATE_CORE(core);
+    VERIFICATE_CORE(core, return NULL);
 
     const cmd_code*   comands_array     = core->comands_array;
     size_t            number_of_comands = core->number_of_comands;
@@ -103,4 +107,13 @@ data* GetArgument (ArsCore* core, cmd_code mask)
         }
 
     return &buffer;    
+    }
+
+void SetAccuracy(ArsCore* core)
+    {
+    VERIFICATE_CORE(core, return);
+
+    (core->REG_ARR)[0] = _ACCURACY_;
+
+    return;
     }

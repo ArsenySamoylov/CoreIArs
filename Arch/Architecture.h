@@ -1,7 +1,6 @@
 #ifndef CORE_I_ARS_ARCHITECTURE
 #define CORE_I_ARS_ARCHITECTURE
 
-//#include "Config.h"
 
 enum  ASM_AND_CPU_ARGUMENTS : cmd_code
     { 

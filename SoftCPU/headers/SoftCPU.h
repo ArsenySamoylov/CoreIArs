@@ -2,6 +2,7 @@
 #define INTEL_WILL_SUCK_AFTER_I_FINISH_THIS_PROJECT (false)
 
 #include <stdlib.h>
+#include <math.h>
 
 #include "Config.h"
 #include "Architecture.h"
@@ -15,6 +16,8 @@
 
 const int CPU_STACK_INITIAL_CAPACITY = 10;
 const int CALL_STACK_INITIAL_CAPACITY = 20;
+
+const int _ACCURACY_          = 100;
 const int NUMBER_OF_REGISTERS = 5;
 
 const int _RAM_SIZE_ = 2048;
@@ -46,11 +49,45 @@ enum CTOR_ARS_CORE_ERROR
 int  CtorArsCore (ArsCore* core, const char* ars_file);
 int  DtorArsCore (ArsCore* core);
 
-int  ExecuteCPUCommands(ArsCore* core);
+int  ExecuteCPUCommands (ArsCore* core);
 
 size_t CheckSignature (FILE* CPU_comands);
+void    SetAccuracy   (ArsCore* core);
 
 void     DumpCPUandStack (ArsCore* core);
 unsigned MedComissionCPU (ArsCore* soldat);
-void     ShowHeap(element_t* heap, ssize_t top);
+void     ShowHeap   (element_t* heap, ssize_t top);
+void     ShowRegArr (data* reg_arg);
+
+size_t SetComandsArrayAndCheckSignature(cmd_code** cmd_arr, const char* ars_file);
+
+#define SOZDAY(core, program)                       \
+    {                                               \
+    int flag_error = CtorArsCore (&core, program);  \
+    if (flag_error  != SUCCESS)                     \
+        {                                           \
+        func_message("Can't create ArsCorp, (error %d)\n", flag_error); \
+        return MAIN_ERROR;                                              \
+        }                                           \
+    }
+
+#define EBANI_PROGRAMKU(core)                       \
+    {                                               \
+    int status = ExecuteCPUCommands(&core);         \
+    if (status != SUCCESS)                          \
+        {                                           \
+        func_message("Ebat, something went wromg :/ (error %d)\n", status);  \
+        return MAIN_ERROR;                          \
+        }                                           \
+    }
+
+#define YBEI_DURU(core)                             \
+    {                                               \
+    int status = DtorArsCore(&core);                \
+    if (status != DEAD)                             \
+        {                                           \
+        func_message("Ebat, You can't even kill f*cking Core (error %d)\n", status); \
+        return MAIN_ERROR;                          \
+        }                                           \
+    }
 #endif

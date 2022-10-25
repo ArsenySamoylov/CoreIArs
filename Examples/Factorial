@@ -1,0 +1,128 @@
+call :MAIN
+hlt
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :MAIN
+    
+    call :HELLO
+
+    IN
+    pop rax
+
+    CALL :FUCKTORIAL
+    push rax
+    OUT
+
+    call :GOODBYE
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    :FUCKTORIAL
+
+    push rax
+    push 1
+    jne :NEXT_STEP 
+
+        push 1
+        pop rax
+
+        ret
+
+    :NEXT_STEP
+    push rax
+
+    push 1
+    push rax
+    sub
+    pop rax
+    ;
+    ;CALL :DBG
+    ;push rax
+    ;OUT
+    ;
+
+    call :FUCKTORIAL
+    push rax
+    mul
+
+    pop rax
+
+    ret
+
+
+
+;//////////////////////////////////////////////////////////////////////////////////////;
+:HELLO
+push 0
+push 10
+push '!'
+push '!'
+push '!'
+push 'D'
+push 'L'
+push 'O'
+push 'H'
+push 'E'
+push 'B'
+push  10
+push 'l'
+push 'a'
+push 'i'
+push 'r'
+push 'o'
+push 't'
+push 'K'
+push 'C'
+push 'U'
+push 'F'
+push ' '
+push 'e'
+push 'h'
+push 't'
+push ' '
+push 's'
+push 't'
+push 'n'
+push 'e'
+push 's'
+push 'e'
+push 'r'
+push 'p'
+push ' '
+push 'y'
+push 'n'
+push 'e'
+push 's'
+push 'r'
+push 'A'
+push ' '
+push 'G'
+push 'O'
+OUTS
+
+ret
+
+:GOODBYE
+push 0
+push 10
+push 'E'
+push 'Y'
+push 'B'
+push ''
+push 'D'
+push 'O'
+push 'O'
+push 'G'
+OUTS
+
+ret
+
+:DBG
+push 0
+push 10
+push 'G'
+push 'B'
+push 'D'
+OUTS
+
+ret
+
