@@ -9,7 +9,6 @@ typedef unsigned char  cmd_code;
 typedef int            imm_arg;
 typedef unsigned char  reg_arg;
 typedef int            data;
-typedef int            jmp_arg;
 
 const int SOFT_CPU_VERSION = 2;
 

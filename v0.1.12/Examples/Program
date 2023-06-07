@@ -1,8 +1,0 @@
-push 26
-a:
-pop rax
-push 2 + rax
-push 9
-add
-jmp a
-hlt

@@ -15,6 +15,8 @@ char*  GetSrcFile (const char *file_direction);
 const char** DivideBufferIntoLines (char* buffer, size_t number_of_lines);
 const char** SplitBufferIntoLines (const char* buffer, size_t number_of_lines);
 
+void ClearLinesArr (const char** lines_arr);
+
 char*  SkipSpaces           (const char* s);
 
 size_t CountLines           (const char* text,   char end_of_line);

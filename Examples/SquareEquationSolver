@@ -8,7 +8,7 @@ call : HELLO
 call : EBANI_QUADRATKU
 
 call :GOODBYE
-hlt
+
 ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :EBANI_QUADRATKU
@@ -86,6 +86,7 @@ ret
 
         call :PRINT_SECOND_ROOT
 
+        ;I'M GROOT
         ret
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     :LINEAR

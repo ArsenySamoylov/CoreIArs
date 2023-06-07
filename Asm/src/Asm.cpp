@@ -2,7 +2,7 @@
 
 #include "Asm.h"
 
-FILE* Listing = fopen("Examples/Listing/Ebat.lst", "w");
+FILE* Listing = fopen("Ebat.lst", "w");
 
 int main(const int argc, const char* const argv[])
     {
@@ -14,11 +14,18 @@ int main(const int argc, const char* const argv[])
         getchar();
         return WROMG_NUMBER_OF_ARGUMENTS;
         }
+    
+    if (!Listing)
+        {
+        printf ("Couldn't open file for listing\n");
+
+        return MAIN_ERROR;
+        }
 
     Asmprogram* new_program = OpenAssmprogram(argv[1]);
     if (!new_program)
         {
-        printf("ERORR OCCURED MAKING NEW ASM PROGRAM (%s)!!!\n", argv[1]);
+        printf("Couldn't open file in (%s)!!!\n", argv[1]);
         return MAIN_ERROR;
         } 
     

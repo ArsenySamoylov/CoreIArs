@@ -34,6 +34,8 @@ CPU_CMD(POP, 2, 1,
 
                     data* argument = GET_ARG;
 
+                    // printf("pop argument address %p\n", (void*) argument);
+                    
                     data temp = POP;
                     *argument = temp;
 
@@ -88,7 +90,10 @@ CPU_CMD(IN, 8, 0,
                                                             else                            \
                                                                 core->ip += sizeof(data);   \
                                                             })
- 
+
+
+#define COSTYLLL  || true ||
+
 CPU_JMP(JMP, 9, || true ||)
 
 CPU_JMP(JA,  10, >)
@@ -143,13 +148,15 @@ CPU_CMD(FPOP, 21, 1,
 
                     data* argument = GET_ARG;
 
+                    // printf("pop argument address %p\n", (void*) argument);
+
                     data temp = POP;
                     *argument = temp;    
                     })
 
 CPU_CMD(FDIV, 22, 0,
                     {
-                    double first = POP;
+                    double first =  POP;
                     double second = POP;
 
                     data result = (data) ((first / second) * ACCURACY);
@@ -178,7 +185,7 @@ CPU_CMD(FIN, 25, 0,
 
 CPU_CMD(SQRT, 26, 0, 
                     {
-                    double val = POP / ACCURACY;
+                    double val = (double) POP / ACCURACY;
                     val = sqrt(val); 
 
                     PUSH( data(val * ACCURACY) );
@@ -187,4 +194,31 @@ CPU_CMD(DUMP, 27, 0,
                     {
                     $D    
                     })
-//CPU_CMD()
+CPU_CMD(POW, 28, 0,
+                    {
+                    double power = (double) POP / ACCURACY;
+                    // printf("POWER: %lg\n", power);
+                    double base  = (double) POP / ACCURACY;
+
+                    // printf ("Power %lg, base %lg\n", power, base);
+
+                    PUSH( (data) (pow(base, power) * ACCURACY));
+                    })
+
+CPU_CMD(RAM, 29, 0,
+                    {
+                    for (int i = 0; i < 10; i++)
+                        printf("[%d] = %d (%p)\n", i, core->RAM[i], core->RAM + i);
+                    })
+
+CPU_CMD(SIN, 30, 0, {
+                    double value = (double) POP / ACCURACY;
+                    printf("Sin(%lg)\n", value);
+                    PUSH( (data) (sin(value) * ACCURACY));
+                    })
+
+CPU_CMD(COS, 31, 0, {
+                    double value = (double) POP / ACCURACY;
+                    
+                    PUSH( (data) (sin(value) * ACCURACY));
+                    })

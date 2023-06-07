@@ -8,12 +8,12 @@ int MakeCmdCode (Asmprogram* asm_program)
     int compilation_status = FirstCompilation(asm_program);
     if (compilation_status != SUCCESS)
         COMPILE_ERROR(first);
-
+    
     compilation_status = SecondCompilation(asm_program);
     if (compilation_status != SUCCESS)
         COMPILE_ERROR(second);
 
-    //printf("ebar %zu\n", asm_program->number_of_CPU_comands);
+    // printf("ebar %zu\n", asm_program->number_of_CPU_comands);
   
     return SUCCESS;
     }
@@ -25,7 +25,7 @@ int FirstCompilation (Asmprogram* asm_program)
     const char** lines_array     = asm_program->lines_array;
     size_t       number_of_lines = asm_program->number_of_lines;
     
-    size_t current_line = 0;
+    // size_t current_line = 0;
     size_t pc           = 0;
 
     size_t i = 0;
@@ -44,7 +44,7 @@ int FirstCompilation (Asmprogram* asm_program)
                 func_message("Ebat, MAKE BETTER LABELS!!!\n");
                 return FAILURE;
                 }
-
+    
             i++;
             continue;
             }
@@ -72,7 +72,7 @@ int FirstCompilation (Asmprogram* asm_program)
                                                      \
                         break;              
 
-            #include "../../Arch/cmd.h"
+            #include "cmd.h"
             #undef CPU_CMD
         
             case UNKNOWN_COMAND:
@@ -88,7 +88,7 @@ int FirstCompilation (Asmprogram* asm_program)
         i++;
         }
     asm_program->number_of_compiliation += 1;
-
+    
     // ShowLabelsTable(asm_program);
     // getchar();
     // printf("END OF FIRST COMP\n");
@@ -103,7 +103,7 @@ int SecondCompilation (Asmprogram* asm_program)
     const char** lines_array     = asm_program->lines_array;
     size_t       number_of_lines = asm_program->number_of_lines;
     
-    size_t current_line = 0;
+    // size_t current_line = 0;
     size_t pc           = 0;
     
     size_t code_arr_current_limit = number_of_lines * 2 - sizeof(imm_arg) - sizeof(reg_arg) - sizeof(cmd_code);

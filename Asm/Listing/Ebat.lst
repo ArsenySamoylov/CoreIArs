@@ -1,8 +1,28 @@
-0 push 24 
-5 push 10  2 
-11 push 5  1 
-17 push 6 
-22 push 10  1 
-28 push 1 
-30 add
-31 hlt
+ pc |    cmd     arg   | code
+    -          -     
+  0 | 21 (20:01)  15E0 | push 5600
+  5 | 21 (20:01)  0BB8 | push 3000
+  B | 17               | FMUL
+  B | 21 (20:01)  0190 | push 400
+ 10 | 41 (40:01)    01 | push rax
+ 12 | 21 (20:01)  0000 | push 0
+ 17 | 2E (20:0E)  002F | je : else_label_0
+ 1C | 21 (20:01)  1194 | push 4500
+ 21 | 42 (40:02)    01 | pop  rax
+ 23 | 21 (20:01)  03E8 | push 1000
+ 28 | 42 (40:02)    01 | pop  rax
+ 2A | 29 (20:09)  0036 | jmp : else_end_label_0
+ 2F | 21 (20:01)  07D0 | push 2000
+ 34 | 42 (40:02)    01 | pop  rax
+ 36 | 41 (40:01)    01 | push rax
+ 39 | 18               | FOUT
+ 39 | 32 (30:02)  0051 | call :helloworld
+ 3E | 21 (20:01)  01F4 | push 500
+ 43 | 21 (20:01)  0190 | push 400
+ 49 | 03               | ADD
+ 49 | 21 (20:01)  0064 | push 100
+ 4F | 17               | FMUL
+ 4F | 42 (40:02)    01 | pop  rax
+ 51 | 21 (20:01)  2774 | push 10100
+ 57 | 18               | FOUT
+ 58 | 00               | hlt

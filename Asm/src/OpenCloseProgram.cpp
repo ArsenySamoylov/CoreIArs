@@ -5,7 +5,9 @@
 Asmprogram* OpenAssmprogram (const char* src_name)
     {
     const char* full_src_name = GetFullProgammName (src_name);
+    printf("Full name: %s\n", full_src_name);
     CHECK_PTR_RET(full_src_name, return NULL);
+    
 
     char* src_buffer = (char*) GetSrcFile (full_src_name);
     CHECK_PTR_RET(src_buffer, return NULL);

@@ -1,6 +1,5 @@
 #include "Parsing.h"
 
-
 int stricmp (const char *s1, const char *s2 )
     {
     int i = 0;
@@ -24,12 +23,15 @@ int skip_spaces_cmp (const char *s1, const char *s2 )
         if ((tolower(s1[i]) != tolower(s2[i])))
             return s1[i] - s2[i];   
         }
+
     return (s1[i] - s2[i]);
     }
+
 cmd_code CompareLineWithComands (const char* asm_comand)
     {
     if (!asm_comand)
         return -1;
+
     #define CPU_CMD(name, num, arg, code)                   \
          if (!stricmp(asm_comand, #name))                   \
             return num;                                     \

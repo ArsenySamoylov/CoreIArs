@@ -18,7 +18,7 @@ int main(const int argc, const char* const argv[])
     SOZDAY(core, argv[1]);
     
     EBANI_PROGRAMKU(core);
-    
+    //! Durack @todo MAKE DTOR!!!!    
     YBEI_DURU(core);         
 
     return MAIN_SUCCESS;    

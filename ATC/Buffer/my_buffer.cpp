@@ -175,7 +175,9 @@ void RemoveComments (char* buffer, unsigned size, char terminator)
     }
 
 #pragma GCC diagnostic ignored "-Wcast-qual"
+
 #include <ctype.h>
+
 char* SkipSpaces(const char* s)
     {
     if (!s)

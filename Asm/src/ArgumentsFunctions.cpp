@@ -1,5 +1,7 @@
 #include "Asm.h"
 
+#include <string.h>
+
 size_t SetArguments (Asmprogram* asm_program, cmd_code* code_array, cmd_code cmd, const char* line) 
     {
     CHECK_PTRS_RET(return 0, line, code_array);
@@ -29,7 +31,7 @@ size_t SetArguments (Asmprogram* asm_program, cmd_code* code_array, cmd_code cmd
         *((imm_arg*)(code_array + pc)) = imm;
         pc += sizeof(imm); 
 
-        fprintf(Listing, "%04X", imm);   
+        fprintf(Listing, "%04X - imm", imm);   
         }                     
                               
     if (cmd & REG_ARGUMENT)   
@@ -37,13 +39,13 @@ size_t SetArguments (Asmprogram* asm_program, cmd_code* code_array, cmd_code cmd
         *((reg_arg*)(code_array + pc)) = reg;
         pc += sizeof(reg);  
 
-        fprintf(Listing, "  %02X", reg);  
+        fprintf(Listing, "  %02X - reg", reg);  
         } 
 
     return pc;                    
     }
 
-cmd_code GetArguments (const char* line, imm_arg* imm, reg_arg* reg, Asmprogram* asm_program)
+cmd_code GetArguments ( char* line, imm_arg* imm, reg_arg* reg, Asmprogram* asm_program)
     {
     CHECK_PTRS_RET(return 0, line, imm, reg);
     VERIFICATE_ASM_PROGRAM(return 0, asm_program);
@@ -53,13 +55,15 @@ cmd_code GetArguments (const char* line, imm_arg* imm, reg_arg* reg, Asmprogram*
     char first_char = *line;
     if (first_char == '[')
         {
-        const char* closing_braket = strchr(line, ']');
+        char* closing_braket = strchr(line, ']');
 
         if (!closing_braket)
             {
             printf ("Syntax error: missing closing braket\n");
             return SYNTAX_ERROR;
             }
+
+        // *closing_braket = ' ';
 
         mask |= MEMORY_ARGUMENT;
         ++line;
@@ -102,17 +106,35 @@ cmd_code GetArguments (const char* line, imm_arg* imm, reg_arg* reg, Asmprogram*
         {    
         mask |= IMM_ARGUMENT;
 
-        line += n + 1;
-        char plus = *(line);
-    
-        if (plus != '+')
+        line += n;
+
+        const char plus = *(line + strspn(line, " \t"));
+
+        // printf("plus: %c, line: %.10s\n", plus, line);
+
+        if (plus == '\0' || plus == '\n')
             return mask;
+
+        if (plus == ']' && mask & MEMORY_ARGUMENT)
+            {
+            line += strspn(line, " \t") + 1;
+            goto CHECK_AFTER_COMMAND;
+            }
+
+        if (plus != '+')
+            {
+            printf("Not a plus char ('%c')\n", plus);
+            return SYNTAX_ERROR;
+            }
+
         line = SkipSpaces (line);
         line += 1; // skip '+' 
         }
     
+    {
     char reg_code[33] = "";
-    if (sscanf(line, "%s", reg_code))
+    n = 0;
+    if (sscanf(line, "%s%n", reg_code, &n))
         {
         *reg = IsReg(reg_code);
 
@@ -124,6 +146,32 @@ cmd_code GetArguments (const char* line, imm_arg* imm, reg_arg* reg, Asmprogram*
 
         mask |= REG_ARGUMENT; 
         }
+    }
     
+    // update from december 20, 2022, 5:08 am
+    line += n;
+
+    if (mask & MEMORY_ARGUMENT)
+        {
+        line += strspn(line, " ");
+        
+        if (*line != ']')
+            {
+            printf("missing ']' (*line: %c)\n", *line);
+            return SYNTAX_ERROR;
+            }
+        
+        line++;
+        }
+
+    CHECK_AFTER_COMMAND:
+    line += strspn(line, "  \t");
+
+    if (*line != '\0' && *line != ';' && *line != '\n')
+        {
+        printf("EBAT SOMETHIG AFTER COMMAND: '%s'\n", line);
+        return SYNTAX_ERROR;
+        }
+
     return mask;
     }

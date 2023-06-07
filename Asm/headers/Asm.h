@@ -17,16 +17,16 @@
 #include "EasyDebug.h"
 
 
-const char _STD_COMMAND_FILE_PREFIX_     [] = "Examples/";
-const char _STD_EXECUTING_program_PREFIX_[] = "Examples/";
+const char _STD_COMMAND_FILE_PREFIX_     [] = "";
+const char _STD_EXECUTING_program_PREFIX_[] = "";
 const char _STD_EXECUTING_program_SUFFIX_[] = ".ars";
 
-const int _MAX_FILE_NAME_LENGTH_ = 20;
+const int _MAX_FILE_NAME_LENGTH_ = 200;
 
-const int _MAX_COMAND_LENGTH_ = 20;
+const int _MAX_COMAND_LENGTH_ = 200;
 
-const int _MAX_NUMBER_OF_LABELS_  = 27;
-const int _MAX_LABEL_NAME_LENGTH_ = 20;
+const int _MAX_NUMBER_OF_LABELS_  = 270;
+const int _MAX_LABEL_NAME_LENGTH_ = 200;
 
 struct label
     {
@@ -59,7 +59,7 @@ int FirstCompilation  (Asmprogram* asm_program);
 int SecondCompilation (Asmprogram* asm_program);
 
 size_t   SetArguments (Asmprogram* asm_program, cmd_code* code_array, cmd_code cmd, const char* line); 
-cmd_code GetArguments (const char* line, imm_arg* arg, reg_arg* reg, Asmprogram* asm_program);
+cmd_code GetArguments (char* line, imm_arg* arg, reg_arg* reg, Asmprogram* asm_program);
 
 size_t CountPC (Asmprogram* asm_program, const char* line);
 

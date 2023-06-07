@@ -9,12 +9,12 @@ int ExecuteCPUCommands (ArsCore* core)
     if (!core) return NULL_PTR; 
     VERIFICATE_CORE(core, return FAILURE);
     
-    const cmd_code*   comands_array     = core->comands_array;
+    const cmd_code*   comands_array     =   core->comands_array;
     SuperStack*       stk_ptr           = &(core->CPU_stk);
     SuperStack*       call_stk_ptr      = &(core->Call_stk);
-    size_t            number_of_comands = core->number_of_comands;
-    data*             REG_ARR           = core->REG_ARR;
-    data*             RAM               = core->RAM;
+    size_t            number_of_comands =   core->number_of_comands;
+    data*             REG_ARR           =   core->REG_ARR;
+    data*             RAM               =   core->RAM;
 
     SetAccuracy(core);
 
@@ -38,12 +38,12 @@ int ExecuteCPUCommands (ArsCore* core)
                                                             \
                         break;
 
-                #include "../../Arch/cmd.h"
+                #include "cmd.h"
                 #undef CPU_CMD             
 
                 default:
                     {
-                    printf("I don't know %d comand, go buy new CoreIArs for only 300$(bucks)\n", cmd & ~MASK);
+                    printf("I don't fucking know %d comand, go buy new CoreIArs for only 300$(bucks)\n", cmd & ~MASK);
                     $D
                     return UNKNOWN_COMAND;
 
@@ -74,6 +74,8 @@ data* GetArgument (ArsCore* core, cmd_code mask)
         #pragma GCC diagnostic ignored "-Wcast-qual"
         buffer = (data) (* ( (imm_arg*) (comands_array + core->ip) ) );
         core->ip+= sizeof(imm_arg);
+        
+        // printf("Buffer: %d\n", buffer);
         }
     
     if (mask & REG_ARGUMENT)
@@ -87,10 +89,14 @@ data* GetArgument (ArsCore* core, cmd_code mask)
         arg = REG_ARR + comands_array[core->ip]; // check RAM value
         core->ip += sizeof(reg_arg);
 
+
         if (! (mask & (~REG_ARGUMENT)) )
             return arg;
 
+
         buffer += *arg ; 
+        
+        // printf("Register value: %d, total val: %d\n", *arg, buffer);
         }
     
     if (mask & MEMORY_ARGUMENT)
